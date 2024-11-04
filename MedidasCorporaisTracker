@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de Medidas Corporais</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .form-group {
+            margin-bottom: 10px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        input {
+            width: 100%;
+            padding: 5px;
+            margin-bottom: 10px;
+        }
+        button {
+            margin-right: 5px;
+        }
+        .chart-container {
+            width: 100%;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Registro de Medidas Corporais</h1>
+    <div id="input-form">
+        <div class="form-group">
+            <label for="data">Data:</label>
+            <input type="date" id="data">
+        </div>
+        <div class="form-group">
+            <label for="pesoCorporal">Peso Corporal:</label>
+            <input type="number" id="pesoCorporal" step="0.1">
+        </div>
+        <div class="form-group">
+            <label for="cintura">Cintura:</label>
+            <input type="number" id="cintura" step="0.1">
+        </div>
+        <div class="form-group">
+            <label for="gorduraCorporal">Gordura Corporal (%):</label>
+            <input type="number" id="gorduraCorporal" step="0.1">
+        </div>
+        <div class="form-group">
+            <label for="pescoco">Pescoço:</label>
+            <input type="number" id="pescoco" step="0.1">
+        </div>
+        <div class="form-group">
+            <label for="quadril">Quadril:</label>
+            <input type="number" id="quadril" step="0.1">
+        </div>
+        <div class="form-group">
+            <label for="bicepsEsquerdo">Bíceps Esquerdo:</label>
+            <input type="number" id="bicepsEsquerdo" step="0.1">
+        </div>
+        <div class="form-group">
+            <label for="bicepsDireito">Bíceps Direito:</label>
+            <input type="number" id="bicepsDireito" step="0.1">
+        </div>
+        <div class="form-group">
+            <label for="ombro">Ombro:</label>
+            <input type="number" id="ombro" step="0.1">
+        </div>
+        <div class="form-group">
+            <label for="peito">Peito:</label>
+            <input type="number" id="peito" step="0.1">
+        </div>
+        <div class="form-group">
+            <label for="antebracoEsquerdo">Antebraço Esquerdo:</label>
+            <input type="number" id="antebracoEsquerdo" step="0.1">
+        </div>
+        <div class="form-group">
+            <label for="antebracoDireito">Antebraço Direito:</label>
+            <input type="number" id="antebracoDireito" step="0.1">
+        </div>
+        <div class="form-group">
+            <label for="abdomen">Abdômen:</label>
+            <input type="number" id="abdomen" step="0.1">
+        </div>
+        <div class="form-group">
+            <label for="coxaEsquerda">Coxa Esquerda:</label>
+            <input type="number" id="coxaEsquerda" step="0.1">
+        </div>
+        <div class="form-group">
+            <label for="coxaDireita">Coxa Direita:</label>
+            <input type="number" id="coxaDireita" step="0.1">
+        </div>
+        <div class="form-group">
+            <label for="panturrilhaDireita">Panturrilha Direita:</label>
+            <input type="number" id="panturrilhaDireita" step="0.1">
+        </div>
+        <div class="form-group">
+            <label for="panturrilhaEsquerda">Panturrilha Esquerda:</label>
+            <input type="number" id="panturrilhaEsquerda" step="0.1">
+        </div>
+        <button onclick="adicionarRegistro()">Submeter</button>
+        <button onclick="apagarUltimoRegistro()">Apagar Último</button>
+        <button onclick="salvarCSV()">Salvar como CSV</button>
+    </div>
+
+    <div id="charts"></div>
+
+    <script>
+        let registros = [];
+
+        function adicionarRegistro() {
+            const registro = {
+                data: document.getElementById('data').value,
+                pesoCorporal: parseFloat(document.getElementById('pesoCorporal').value),
+                cintura: parseFloat(document.getElementById('cintura').value),
+                gorduraCorporal: parseFloat(document.getElementById('gorduraCorporal').value),
+                pescoco: parseFloat(document.getElementById('pescoco').value),
+                quadril: parseFloat(document.getElementById('quadril').value),
+                bicepsEsquerdo: parseFloat(document.getElementById('bicepsEsquerdo').value),
+                bicepsDireito: parseFloat(document.getElementById('bicepsDireito').value),
+                ombro: parseFloat(document.getElementById('ombro').value),
+                peito: parseFloat(document.getElementById('peito').value),
+                antebracoEsquerdo: parseFloat(document.getElementById('antebracoEsquerdo').value),
+                antebracoDireito: parseFloat(document.getElementById('antebracoDireito').value),
+                abdomen: parseFloat(document.getElementById('abdomen').value),
+                coxaEsquerda: parseFloat(document.getElementById('coxaEsquerda').value),
+                coxaDireita: parseFloat(document.getElementById('coxaDireita').value),
+                panturrilhaDireita: parseFloat(document.getElementById('panturrilhaDireita').value),
+                panturrilhaEsquerda: parseFloat(document.getElementById('panturrilhaEsquerda').value)
+            };
+            
+            registros.push(registro);
+            atualizarGraficos();
+        }
+
+        function apagarUltimoRegistro() {
+            registros.pop();
+            atualizarGraficos();
+        }
+
+        function salvarCSV() {
+            let csvContent = "data,pesoCorporal,cintura,gorduraCorporal,pescoco,quadril,bicepsEsquerdo,bicepsDireito,ombro,peito,antebracoEsquerdo,antebracoDireito,abdomen,coxaEsquerda,coxaDireita,panturrilhaDireita,panturrilhaEsquerda\n";
+            registros.forEach(registro => {
+                csvContent += `${registro.data},${registro.pesoCorporal},${registro.cintura},${registro.gorduraCorporal},${registro.pescoco},${registro.quadril},${registro.bicepsEsquerdo},${registro.bicepsDireito},${registro.ombro},${registro.peito},${registro.antebracoEsquerdo},${registro.antebracoDireito},${registro.abdomen},${registro.coxaEsquerda},${registro.coxaDireita},${registro.panturrilhaDireita},${registro.panturrilhaEsquerda}\n`;
+            });
+
+            const blob = new Blob([csvContent], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.setAttribute('href', url);
+            a.setAttribute('download', 'medidas_corporais.csv');
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+
+        function atualizarGraficos() {
+            document.getElementById('charts').innerHTML = '';
+            const chaves = Object.keys(registros[0] || {}).filter(chave => chave !== 'data');
+            
+            chaves.forEach(chave => {
+                const valores = registros.map(reg => reg[chave]);
+                const datas = registros.map(reg => reg.data);
+
+                const canvas = document.createElement('canvas');
+                document.getElementById('charts').appendChild(canvas);
+
+                new Chart(canvas, {
+                    type: 'line',
+                    data: {
+                        labels: datas,
+                        datasets: [{
+                            label: chave,
+                            data: valores,
+                            borderWidth: 1,
+                            borderColor: 'blue',
+                            backgroundColor: 'lightblue',
+                            fill: false
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: 'Data'
+                                }
+                            },
+                            y: {
+                                title: {
+                                    display: true,
+                                    text: chave
+                                }
+                            }
+                        }
+                    }
+                });
+            });
+        }
+    </script>
+</body>
+</html>
